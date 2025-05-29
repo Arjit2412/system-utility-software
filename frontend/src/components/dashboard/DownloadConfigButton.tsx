@@ -1,20 +1,33 @@
+import { useEffect, useState } from 'react';
 import { Download } from 'lucide-react';
 import { supabase } from '../../lib/supabase'; // Adjust path based on your project
-import { useTheme } from '../../context/ThemeContext'; 
-export const {data: {user},error} = await supabase.auth.getUser() 
-
+import { useTheme } from '../../context/ThemeContext';
+import { AuthError, User } from '@supabase/supabase-js';
 
 export const DownloadConfigButton = () => {
-  const { isDark } = useTheme();
-  const handleDownload = async () => {
+  const {isDark} = useTheme()
+  const [user, setUser] = useState<User | null>(null);
+  const [error, setError] = useState<AuthError | null>(null);
 
+  // Fetch user on mount
+  useEffect(() => {
+    const getUser = async () => {
+      const { data, error } = await supabase.auth.getUser();
+      if (error) {
+        setError(error);
+      } else {
+        setUser(data.user);
+      }
+    };
+    getUser();
+  }, []);
+
+  const handleDownload = async () => {
     if (error || !user) {
       console.error("Error fetching user:", error);
       alert("User not logged in.");
       return;
     }
-
-    
 
     const config = {
       owner_id: user.id,
@@ -47,4 +60,3 @@ export const DownloadConfigButton = () => {
     </button>
   );
 };
-
