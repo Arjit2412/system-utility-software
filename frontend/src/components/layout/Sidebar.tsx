@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   Monitor, 
@@ -8,14 +8,17 @@ import {
   HardDrive, 
   Clock, 
   AlertCircle,
-  Server
+  Server,
+  LogOut
 } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
+import { useAuth } from '../../context/AuthContext';
 
-export const Sidebar: React.FC = () => {  
+export const Sidebar: React.FC = () => {
   const { isDark } = useTheme();
+  const { signOut } = useAuth();
+  const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
-
 
   const navItems = [
     { name: 'Dashboard', icon: <LayoutDashboard />, path: '/' },
@@ -26,6 +29,15 @@ export const Sidebar: React.FC = () => {
     { name: 'Activity', icon: <Clock />, path: '/activity' },
     { name: 'Settings', icon: <Settings />, path: '/settings' },
   ];
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      navigate('/login');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
 
   return (
     <aside 
@@ -93,11 +105,18 @@ export const Sidebar: React.FC = () => {
             A
           </div>
           {!collapsed && (
-            <div className="ml-3">
-              <p className="font-medium">User</p>
-              <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Admin</p>
+            <div className="ml-3 flex-1">
+              <p className="font-medium">Admin User</p>
+              <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>admin@example.com</p>
             </div>
           )}
+          <button
+            onClick={handleSignOut}
+            className={`ml-2 p-2 rounded-md ${isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+            title="Sign out"
+          >
+            <LogOut className="h-5 w-5" />
+          </button>
         </div>
       </div>
     </aside>

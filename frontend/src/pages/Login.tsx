@@ -5,7 +5,7 @@ import { useTheme } from '../context/ThemeContext';
 import { Server, Mail, Lock } from 'lucide-react';
 
 export const Login: React.FC = () => {
-  const { signIn } = useAuth();
+  const { signIn, signInWithGoogle } = useAuth();
   const { isDark } = useTheme();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
@@ -24,6 +24,15 @@ export const Login: React.FC = () => {
       setError('Failed to sign in');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      setError('');
+      await signInWithGoogle();
+    } catch (err) {
+      setError('Failed to sign in with Google');
     }
   };
 
@@ -111,6 +120,32 @@ export const Login: React.FC = () => {
             }`}
           >
             {loading ? 'Signing in...' : 'Sign in'}
+          </button>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className={`w-full border-t ${isDark ? 'border-gray-700' : 'border-gray-200'}`}></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className={`px-2 ${isDark ? 'bg-gray-800' : 'bg-white'} ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                Or continue with
+              </span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleGoogleSignIn}
+            className={`w-full py-2 px-4 border rounded-md shadow-sm text-sm font-medium ${
+              isDark
+                ? 'bg-gray-700 border-gray-600 text-white hover:bg-gray-600'
+                : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+            } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}
+          >
+            <div className="flex items-center justify-center">
+              <img src="https://www.google.com/favicon.ico" alt="Google" className="h-5 w-5 mr-2" />
+              Sign in with Google
+            </div>
           </button>
         </form>
 
